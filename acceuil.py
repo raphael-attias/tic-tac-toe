@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 pygame.init()
 
@@ -139,6 +140,72 @@ def jeu_2_joueurs():
             elif choix == "arreter":
                 break
 
+#ia
+def jeu_ia():
+    grid = [[0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]]
+
+    joueur_actuel = 1
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                x, y = event.pos
+                row = y // cell_size
+                col = x // cell_size
+                if grid[row][col] == 0:
+                    grid[row][col] = joueur_actuel
+                    joueur_actuel = 1# Alterne entre les joueurs 1 et 2
+                    joueur_actuel = ia
+                    ia = 2
+                if grid[row][col] == 2:
+                    grid[row][col] = ia
+                    z = randint(1,9)
+                    if grid[row][col] = 1:
+                        
+                    
+
+        screen.fill((255, 255, 255))
+
+        for row in range(3):
+            for col in range(3):
+                pygame.draw.rect(screen, (0, 0, 0), (col * cell_size, row * cell_size, cell_size, cell_size), 1)
+                if grid[row][col] == 1:
+                    pygame.draw.line(screen, (255, 0, 0), (col * cell_size, row * cell_size), ((col + 1) * cell_size, (row + 1) * cell_size), 2)
+                    pygame.draw.line(screen, (255, 0, 0), ((col + 1) * cell_size, row * cell_size), (col * cell_size, (row + 1) * cell_size), 2)
+                elif grid[row][col] == 2:
+                    pygame.draw.circle(screen, (0, 0, 255), (col * cell_size + cell_size // 2, row * cell_size + cell_size // 2), cell_size // 2 - 5, 2)
+
+        pygame.display.flip()
+
+        # Vérification de la victoire ou match nul
+        victoire = False
+        for i in range(3):
+            if grid[i][0] == grid[i][1] == grid[i][2] != 0 or grid[0][i] == grid[1][i] == grid[2][i] != 0:
+                victoire = True
+                break
+        if grid[0][0] == grid[1][1] == grid[2][2] != 0 or grid[0][2] == grid[1][1] == grid[2][0] != 0:
+            victoire = True
+
+        if victoire:
+            resultat = f"Joueur {joueur_actuel} a gagné!"
+            choix = fin_de_partie(resultat)
+            if choix == "rejouer":
+                jeu_2_joueurs()
+            elif choix == "arreter":
+                break
+        elif all(all(cell != 0 for cell in row) for row in grid):
+            resultat = "Match nul!"
+            choix = fin_de_partie(resultat)
+            if choix == "rejouer":
+                jeu_2_joueurs()
+            elif choix == "arreter":
+                break
+
 # Boucle principale de la page d'accueil
 mode_jeu = page_accueil()
 
@@ -146,8 +213,7 @@ mode_jeu = page_accueil()
 if mode_jeu == "2_joueurs":
     jeu_2_joueurs()
 elif mode_jeu == "vs_ordi":
-    # Ajoutez ici la logique pour le jeu contre l'ordinateur
-    pass
+    jeu_ia()
 
 pygame.quit()
 sys.exit()
