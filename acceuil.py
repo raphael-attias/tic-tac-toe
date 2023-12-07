@@ -1,6 +1,6 @@
 import pygame
 import sys
-import random
+from random import randint
 
 pygame.init()
 
@@ -19,7 +19,7 @@ ROUGE = (255, 0, 0)
 largeur_fenetre_accueil = 400
 hauteur_fenetre_accueil = 300
 
-# Création de la fenêtre d'accueil
+# Fenêtre d'accueil
 fenetre_accueil = pygame.display.set_mode((largeur_fenetre_accueil, hauteur_fenetre_accueil))
 pygame.display.set_caption('Tic Tac Toe - Accueil')
 
@@ -36,11 +36,11 @@ def page_accueil():
 
         afficher_texte('Tic Tac Toe', largeur_fenetre_accueil // 2, hauteur_fenetre_accueil // 4, BLANC, fenetre_accueil)
 
-        # Création du bouton "Jouer avec un ami"
+        # Bouton "Jouer avec un ami"
         pygame.draw.rect(fenetre_accueil, BLANC, (50, 150, 300, 50))
         afficher_texte('Jouer avec un ami', largeur_fenetre_accueil // 2, 175, BLEU_TURQUOISE_FONCE, fenetre_accueil)
 
-        # Création du bouton "Jouer contre l'ordinateur"
+        # Bouton "Jouer contre l'ordinateur"
         pygame.draw.rect(fenetre_accueil, BLANC, (50, 225, 300, 50))
         afficher_texte("Jouer contre l'ordinateur", largeur_fenetre_accueil // 2, 250, BLEU_TURQUOISE_FONCE, fenetre_accueil)
 
@@ -82,6 +82,13 @@ def fin_de_partie(resultat):
                     return "rejouer"
                 elif 200 <= x <= 300 and 200 <= y <= 250:
                     return "arreter"
+
+def jouer_coup_ia(grid):
+    while True:
+        position = randint(1, 9)
+        row, col = divmod(position - 1, 3)
+        if grid[row][col] == 0:
+            return row, col
 
 def jeu_2_joueurs():
     grid = [[0, 0, 0],
@@ -159,15 +166,13 @@ def jeu_ia():
                 col = x // cell_size
                 if grid[row][col] == 0:
                     grid[row][col] = joueur_actuel
-                    joueur_actuel = 1# Alterne entre les joueurs 1 et 2
-                    joueur_actuel = ia
-                    ia = 2
-                if grid[row][col] == 2:
-                    grid[row][col] = ia
-                    z = randint(1,9)
-                    if grid[row][col] = 1:
-                        
-                    
+                    joueur_actuel = 3 - joueur_actuel  # Alterne entre les joueurs 1 et 2
+
+        if joueur_actuel == 2:
+            # Tour de l'IA
+            row, col = jouer_coup_ia(grid)
+            grid[row][col] = joueur_actuel
+            joueur_actuel = 1  # Passer au tour du joueur
 
         screen.fill((255, 255, 255))
 
@@ -195,18 +200,18 @@ def jeu_ia():
             resultat = f"Joueur {joueur_actuel} a gagné!"
             choix = fin_de_partie(resultat)
             if choix == "rejouer":
-                jeu_2_joueurs()
+                jeu_ia()
             elif choix == "arreter":
                 break
         elif all(all(cell != 0 for cell in row) for row in grid):
             resultat = "Match nul!"
             choix = fin_de_partie(resultat)
             if choix == "rejouer":
-                jeu_2_joueurs()
+                jeu_ia()
             elif choix == "arreter":
                 break
 
-# Boucle principale de la page d'accueil
+# Boucle principale
 mode_jeu = page_accueil()
 
 # Choix du mode de jeu
