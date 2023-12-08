@@ -83,6 +83,16 @@ def fin_de_partie(resultat):
                 elif 200 <= x <= 300 and 200 <= y <= 250:
                     return "arreter"
 
+def dessiner_formes(screen, grid):
+    for row in range(3):
+        for col in range(3):
+            pygame.draw.rect(screen, (0, 0, 0), (col * cell_size, row * cell_size, cell_size, cell_size), 1)
+            if grid[row][col] == "joueur_h":
+                pygame.draw.line(screen, (255, 0, 0), (col * cell_size + 20, row * cell_size + 20), ((col + 1) * cell_size - 20, (row + 1) * cell_size - 20), 2)
+                pygame.draw.line(screen, (255, 0, 0), ((col + 1) * cell_size - 20, row * cell_size + 20), (col * cell_size + 20, (row + 1) * cell_size - 20), 2)
+            elif grid[row][col] == "joueur_k":
+                pygame.draw.circle(screen, (0, 0, 255), (col * cell_size + cell_size // 2, row * cell_size + cell_size // 2), cell_size // 2 - 10, 2)
+
 def jouer_coup_ia(grid):
     while True:
         position = randint(1, 9)
@@ -91,69 +101,11 @@ def jouer_coup_ia(grid):
             return row, col
 
 def jeu_2_joueurs():
-    grid = [[0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]]
+    grid = [["", "", ""],
+            ["", "", ""],
+            ["", "", ""]]
 
-    joueur_actuel = 1
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                x, y = event.pos
-                row = y // cell_size
-                col = x // cell_size
-                if grid[row][col] == 0:
-                    grid[row][col] = joueur_actuel
-                    joueur_actuel = 3 - joueur_actuel  # Alterne entre les joueurs 1 et 2
-
-        screen.fill((255, 255, 255))
-
-        for row in range(3):
-            for col in range(3):
-                pygame.draw.rect(screen, (0, 0, 0), (col * cell_size, row * cell_size, cell_size, cell_size), 1)
-                if grid[row][col] == 1:
-                    pygame.draw.line(screen, (255, 0, 0), (col * cell_size, row * cell_size), ((col + 1) * cell_size, (row + 1) * cell_size), 2)
-                    pygame.draw.line(screen, (255, 0, 0), ((col + 1) * cell_size, row * cell_size), (col * cell_size, (row + 1) * cell_size), 2)
-                elif grid[row][col] == 2:
-                    pygame.draw.circle(screen, (0, 0, 255), (col * cell_size + cell_size // 2, row * cell_size + cell_size // 2), cell_size // 2 - 5, 2)
-
-        pygame.display.flip()
-
-        # Vérification de la victoire ou match nul
-        victoire = False
-        for i in range(3):
-            if grid[i][0] == grid[i][1] == grid[i][2] != 0 or grid[0][i] == grid[1][i] == grid[2][i] != 0:
-                victoire = True
-                break
-        if grid[0][0] == grid[1][1] == grid[2][2] != 0 or grid[0][2] == grid[1][1] == grid[2][0] != 0:
-            victoire = True
-
-        if victoire:
-            resultat = f"Joueur {joueur_actuel} a gagné!"
-            choix = fin_de_partie(resultat)
-            if choix == "rejouer":
-                jeu_2_joueurs()
-            elif choix == "arreter":
-                break
-        elif all(all(cell != 0 for cell in row) for row in grid):
-            resultat = "Match nul!"
-            choix = fin_de_partie(resultat)
-            if choix == "rejouer":
-                jeu_2_joueurs()
-            elif choix == "arreter":
-                break
-
-#ia
-def jeu_ia():
-    grid = [[0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]]
-
-    joueur_actuel = 1
+    joueur_actuel = "joueur_h"
 
     while True:
         for event in pygame.event.get():
@@ -164,50 +116,35 @@ def jeu_ia():
                 x, y = event.pos
                 row = y // cell_size
                 col = x // cell_size
-                if grid[row][col] == 0:
+                if grid[row][col] == "":
                     grid[row][col] = joueur_actuel
-                    joueur_actuel = 3 - joueur_actuel  # Alterne entre les joueurs 1 et 2
-
-        if joueur_actuel == 2:
-            # Tour de l'IA
-            row, col = jouer_coup_ia(grid)
-            grid[row][col] = joueur_actuel
-            joueur_actuel = 1  # Passer au tour du joueur
+                    joueur_actuel = "joueur_k" if joueur_actuel == "joueur_h" else "joueur_h"  # Alterne entre les joueurs_h et joueurs_k
 
         screen.fill((255, 255, 255))
-
-        for row in range(3):
-            for col in range(3):
-                pygame.draw.rect(screen, (0, 0, 0), (col * cell_size, row * cell_size, cell_size, cell_size), 1)
-                if grid[row][col] == 1:
-                    pygame.draw.line(screen, (255, 0, 0), (col * cell_size, row * cell_size), ((col + 1) * cell_size, (row + 1) * cell_size), 2)
-                    pygame.draw.line(screen, (255, 0, 0), ((col + 1) * cell_size, row * cell_size), (col * cell_size, (row + 1) * cell_size), 2)
-                elif grid[row][col] == 2:
-                    pygame.draw.circle(screen, (0, 0, 255), (col * cell_size + cell_size // 2, row * cell_size + cell_size // 2), cell_size // 2 - 5, 2)
-
+        dessiner_formes(screen, grid)
         pygame.display.flip()
 
         # Vérification de la victoire ou match nul
         victoire = False
         for i in range(3):
-            if grid[i][0] == grid[i][1] == grid[i][2] != 0 or grid[0][i] == grid[1][i] == grid[2][i] != 0:
+            if grid[i][0] == grid[i][1] == grid[i][2] != "" or grid[0][i] == grid[1][i] == grid[2][i] != "":
                 victoire = True
                 break
-        if grid[0][0] == grid[1][1] == grid[2][2] != 0 or grid[0][2] == grid[1][1] == grid[2][0] != 0:
+        if grid[0][0] == grid[1][1] == grid[2][2] != "" or grid[0][2] == grid[1][1] == grid[2][0] != "":
             victoire = True
 
         if victoire:
-            resultat = f"Joueur {joueur_actuel} a gagné!"
+            resultat = f"{joueur_actuel} a gagné!"
             choix = fin_de_partie(resultat)
             if choix == "rejouer":
-                jeu_ia()
+                jeu_2_joueurs()
             elif choix == "arreter":
                 break
-        elif all(all(cell != 0 for cell in row) for row in grid):
+        elif all(all(cell != "" for cell in row) for row in grid):
             resultat = "Match nul!"
             choix = fin_de_partie(resultat)
             if choix == "rejouer":
-                jeu_ia()
+                jeu_2_joueurs()
             elif choix == "arreter":
                 break
 
