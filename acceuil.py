@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Made in Marseille
+@author: Raphael
+"""
+#email : raphael.attias@laplateforme.io
+
 import pygame
 import sys
 from random import randint
@@ -59,16 +66,16 @@ def page_accueil():
 
 def fin_de_partie(resultat):
     while True:
-        screen.fill((255, 255, 255))
+        screen.fill(BLANC)
         afficher_texte(resultat, width // 2, height // 8, ROUGE, screen)
 
-        # Bouton "Rejouer"
-        pygame.draw.rect(screen, BLANC, (50, 200, 100, 50))
-        afficher_texte('Rejouer', 100, 225, BLEU_TURQUOISE_FONCE, screen)
+        # parti du bouton "Rejouer"
+        pygame.draw.rect(screen, BLEU_TURQUOISE_FONCE, (50, 200, 100, 50))
+        afficher_texte('Rejouer', 100, 225, BLANC, screen)
 
-        # Bouton "Arrêter"
-        pygame.draw.rect(screen, BLANC, (200, 200, 100, 50))
-        afficher_texte('Arrêter', 250, 225, BLEU_TURQUOISE_FONCE, screen)
+        # parti du bouton"Arrêter"
+        pygame.draw.rect(screen, BLEU_TURQUOISE_FONCE, (200, 200, 100, 50))
+        afficher_texte('Arrêter', 250, 225, BLANC, screen)
 
         pygame.display.flip()
 
